@@ -1,12 +1,12 @@
 const pool = require('../db/db');
 
-// Kategori oluşturma 
-const createKategori = async (req, res) => {
-  const { adi } = req.body;
+// Alt birim (Subtitle) oluşturma
+const createSubtitle = async (req, res) => {
+  const { adi, departman_id } = req.body;
   try {
     const result = await pool.query(
-      'INSERT INTO kategoriler (adi) VALUES ($1) RETURNING id',
-      [adi]
+      'INSERT INTO subtitle (adi, departman_id) VALUES ($1, $2) RETURNING id',
+      [adi, departman_id]
     );
     res.status(200).json({ id: result.rows[0].id });
   } catch (error) {
@@ -15,18 +15,18 @@ const createKategori = async (req, res) => {
   }
 };
 
-// Kategori getirme
-const getKategori = async (req, res) => {
+// Alt birim (Subtitle) getirme
+const getSubtitle = async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query(
-      'SELECT * FROM kategoriler WHERE id = $1 AND is_deleted = false',
+      'SELECT * FROM subtitle WHERE id = $1',
       [id]
     );
     if (result.rows.length > 0) {
       res.status(200).json(result.rows[0]);
     } else {
-      res.status(404).json({ error: 'Kategori bulunamadı' });
+      res.status(404).json({ error: 'Alt birim bulunamadı' });
     }
   } catch (error) {
     console.error(error);
@@ -34,14 +34,14 @@ const getKategori = async (req, res) => {
   }
 };
 
-// Kategori güncelleme
-const updateKategori = async (req, res) => {
+// Alt birim (Subtitle) güncelleme
+const updateSubtitle = async (req, res) => {
   const { id } = req.params;
-  const { adi } = req.body;
+  const { adi, departman_id } = req.body;
   try {
     const result = await pool.query(
-      'UPDATE kategoriler SET adi = $1 WHERE id = $2 RETURNING *',
-      [adi, id]
+      'UPDATE subtitle SET adi = $1, departman_id = $2 WHERE id = $3 RETURNING *',
+      [adi, departman_id, id]
     );
     res.status(200).json(result.rows[0]);
   } catch (error) {
@@ -50,15 +50,15 @@ const updateKategori = async (req, res) => {
   }
 };
 
-// Kategori silme (soft delete)
-const deleteKategori = async (req, res) => {
+// Alt birim (Subtitle) silme (soft delete)
+const deleteSubtitle = async (req, res) => {
   const { id } = req.params;
   try {
     await pool.query(
-      'UPDATE kategoriler SET is_deleted = true WHERE id = $1',
+      'UPDATE subtitle SET is_deleted = true WHERE id = $1',
       [id]
     );
-    res.status(200).json({ message: 'Kategori silindi' });
+    res.status(200).json({ message: 'Alt birim silindi' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -66,8 +66,8 @@ const deleteKategori = async (req, res) => {
 };
 
 module.exports = {
-  createKategori,
-  getKategori,
-  updateKategori,
-  deleteKategori,
+  createSubtitle,
+  getSubtitle,
+  updateSubtitle,
+  deleteSubtitle,
 };
